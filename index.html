@@ -1,208 +1,192 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attrape le cercle</title>
+<style>
+* { box-sizing: border-box; }
 
-  <title>Attrape le cercle</title>
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+  background: linear-gradient(145deg, #10152f, #251052, #10152f);
+  padding: 20px 14px;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+h1 { margin: 12px 0 8px; font-size: 30px; }
+.subtitle { color: #d2ccf5; margin-bottom: 22px; }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #111, #292929);
-      color: white;
-      text-align: center;
-    }
+.stats {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 18px auto;
+  max-width: 420px;
+}
 
-    h1 {
-      margin-top: 25px;
-      font-size: 30px;
-    }
+.stat {
+  background: #ffffff16;
+  border: 1px solid #ffffff25;
+  border-radius: 14px;
+  padding: 12px 8px;
+  flex: 1;
+}
 
-    .infos {
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-      flex-wrap: wrap;
-      margin: 15px;
-      font-size: 20px;
-    }
+.stat span { display: block; color: #c9bfff; font-size: 13px; }
+.stat strong { display: block; font-size: 25px; margin-top: 5px; }
 
-    .box {
-      background: #333;
-      padding: 10px 18px;
-      border-radius: 10px;
-    }
+#arena {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  height: 340px;
+  margin: 18px auto;
+  overflow: hidden;
+  border: 2px solid #8d6aff;
+  border-radius: 20px;
+  background: #080b20;
+  box-shadow: 0 0 25px #7652ff35;
+}
 
-    #game {
-      position: relative;
-      width: 92%;
-      max-width: 500px;
-      height: 500px;
-      margin: 20px auto;
-      background: #181818;
-      border: 3px solid white;
-      border-radius: 15px;
-      overflow: hidden;
-    }
+#target {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  border: 4px solid white;
+  border-radius: 50%;
+  background: #ff4f9a;
+  box-shadow: 0 0 20px #ff4f9a;
+  display: none;
+  touch-action: manipulation;
+}
 
-    #target {
-      position: absolute;
-      width: 65px;
-      height: 65px;
-      background: red;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: 0.1s;
-      box-shadow: 0 0 20px red;
-    }
+button {
+  border: 0;
+  border-radius: 14px;
+  padding: 14px 22px;
+  margin: 5px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  background: #7954ff;
+  cursor: pointer;
+}
 
-    button {
-      border: none;
-      background: #00c853;
-      color: white;
-      font-size: 20px;
-      padding: 12px 25px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:hover {
-      background: #00a844;
-    }
-
-    #message {
-      font-size: 22px;
-      margin: 15px;
-      font-weight: bold;
-    }
-  </style>
+button:active { transform: scale(.96); }
+#message { min-height: 28px; color: #ffe38b; }
+footer { color: #aaa3cc; font-size: 12px; margin-top: 24px; }
+</style>
 </head>
-
 <body>
 
-  <h1>🎮 Attrape le cercle</h1>
+<h1>🎯 Attrape le cercle</h1>
+<p class="subtitle">Teste tes réflexes et bats ton record !</p>
 
-  <div class="infos">
-    <div class="box">🏆 Score : <span id="score">0</span></div>
-    <div class="box">⏱️ Temps : <span id="time">30</span>s</div>
-    <div class="box">🥇 Record : <span id="best">0</span></div>
+<div class="stats">
+  <div class="stat">
+    <span>SCORE</span>
+    <strong id="score">0</strong>
   </div>
-
-  <div id="game">
-    <div id="target"></div>
+  <div class="stat">
+    <span>TEMPS</span>
+    <strong id="time">30</strong>
   </div>
+  <div class="stat">
+    <span>RECORD</span>
+    <strong id="best">0</strong>
+  </div>
+</div>
 
-  <div id="message">Clique sur le cercle rouge !</div>
+<div id="arena">
+  <button id="target" aria-label="Attraper le cercle"></button>
+</div>
 
-  <button onclick="restartGame()">🔄 Rejouer</button>
+<p id="message">Appuie sur « Commencer » pour jouer !</p>
+<button id="start">▶ Commencer</button>
+<button id="restart">↻ Rejouer</button>
 
-  <script>
-    let score = 0;
-    let time = 30;
-    let gameStarted = false;
-    let timer;
+<footer>Un jeu de réflexes • Amuse-toi bien !</footer>
 
-    let size = 65;
+<script>
+const arena = document.getElementById("arena");
+const target = document.getElementById("target");
+const scoreText = document.getElementById("score");
+const timeText = document.getElementById("time");
+const bestText = document.getElementById("best");
+const message = document.getElementById("message");
+const startButton = document.getElementById("start");
+const restartButton = document.getElementById("restart");
 
-    const target = document.getElementById("target");
-    const game = document.getElementById("game");
-    const scoreText = document.getElementById("score");
-    const timeText = document.getElementById("time");
-    const bestText = document.getElementById("best");
-    const message = document.getElementById("message");
+let score = 0;
+let timeLeft = 30;
+let playing = false;
+let timer = null;
+let best = 0;
 
-    let bestScore = localStorage.getItem("bestScore") || 0;
-    bestText.textContent = bestScore;
+try {
+  best = Number(localStorage.getItem("cercleRecord")) || 0;
+} catch (e) {}
+bestText.textContent = best;
 
-    function moveTarget() {
-      const maxX = game.clientWidth - target.clientWidth;
-      const maxY = game.clientHeight - target.clientHeight;
+function moveTarget() {
+  const maxX = arena.clientWidth - target.offsetWidth;
+  const maxY = arena.clientHeight - target.offsetHeight;
+  target.style.left = Math.random() * Math.max(0, maxX) + "px";
+  target.style.top = Math.random() * Math.max(0, maxY) + "px";
+}
 
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
+function endGame() {
+  playing = false;
+  clearInterval(timer);
+  target.style.display = "none";
+  startButton.disabled = false;
+  startButton.textContent = "▶ Recommencer";
+  message.textContent = "⏰ Terminé ! Ton score : " + score;
 
-      target.style.left = x + "px";
-      target.style.top = y + "px";
-    }
+  if (score > best) {
+    best = score;
+    bestText.textContent = best;
+    try {
+      localStorage.setItem("cercleRecord", String(best));
+    } catch (e) {}
+    message.textContent += " 🏆 Nouveau record !";
+  }
+}
 
-    function startGame() {
-      if (gameStarted) return;
+function startGame() {
+  clearInterval(timer);
+  score = 0;
+  timeLeft = 30;
+  playing = true;
+  scoreText.textContent = score;
+  timeText.textContent = timeLeft;
+  message.textContent = "Vite ! Attrape le cercle rose !";
+  startButton.disabled = true;
+  target.style.display = "block";
+  moveTarget();
 
-      gameStarted = true;
-      message.textContent = "🔥 Continue !";
+  timer = setInterval(() => {
+    timeLeft--;
+    timeText.textContent = timeLeft;
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+}
 
-      timer = setInterval(function() {
-        time--;
-        timeText.textContent = time;
+target.addEventListener("click", () => {
+  if (!playing) return;
+  score++;
+  scoreText.textContent = score;
+  moveTarget();
+});
 
-        if (time <= 0) {
-          endGame();
-        }
-      }, 1000);
-    }
-
-    target.addEventListener("click", function() {
-
-      startGame();
-
-      score++;
-      scoreText.textContent = score;
-
-      if (size > 35) {
-        size -= 2;
-        target.style.width = size + "px";
-        target.style.height = size + "px";
-      }
-
-      moveTarget();
-    });
-
-    function endGame() {
-      clearInterval(timer);
-      gameStarted = false;
-
-      target.style.display = "none";
-
-      message.textContent =
-        "🎉 Partie terminée ! Score : " + score;
-
-      if (score > bestScore) {
-        bestScore = score;
-        localStorage.setItem("bestScore", bestScore);
-        bestText.textContent = bestScore;
-        message.textContent += " 🥇 Nouveau record !";
-      }
-    }
-
-    function restartGame() {
-      clearInterval(timer);
-
-      score = 0;
-      time = 30;
-      size = 65;
-      gameStarted = false;
-
-      scoreText.textContent = "0";
-      timeText.textContent = "30";
-
-      target.style.width = "65px";
-      target.style.height = "65px";
-      target.style.display = "block";
-
-      message.textContent = "Clique sur le cercle rouge !";
-
-      moveTarget();
-    }
-
-    restartGame();
-  </script>
+startButton.addEventListener("click", startGame);
+restartButton.addEventListener("click", startGame);
+</script>
 
 </body>
 </html>
