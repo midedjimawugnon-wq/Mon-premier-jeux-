@@ -1,103 +1,165 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Attrape le cercle</title>
+
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
+  padding: 20px 12px;
   min-height: 100vh;
   font-family: Arial, sans-serif;
-  color: white;
   text-align: center;
-  background: linear-gradient(145deg, #10152f, #251052, #10152f);
-  padding: 20px 14px;
+  color: white;
+  background: linear-gradient(145deg, #10152f, #35105c, #10152f);
 }
 
-h1 { margin: 12px 0 8px; font-size: 30px; }
-.subtitle { color: #d2ccf5; margin-bottom: 22px; }
+h1 {
+  font-size: 30px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #d8ccff;
+}
 
 .stats {
   display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin: 18px auto;
-  max-width: 420px;
+  gap: 8px;
+  max-width: 480px;
+  margin: 20px auto;
 }
 
 .stat {
-  background: #ffffff16;
-  border: 1px solid #ffffff25;
-  border-radius: 14px;
-  padding: 12px 8px;
   flex: 1;
+  padding: 12px 4px;
+  border-radius: 14px;
+  background: #ffffff18;
+  border: 1px solid #ffffff30;
 }
 
-.stat span { display: block; color: #c9bfff; font-size: 13px; }
-.stat strong { display: block; font-size: 25px; margin-top: 5px; }
+.stat span {
+  display: block;
+  font-size: 12px;
+  color: #d6caff;
+}
+
+.stat strong {
+  display: block;
+  font-size: 23px;
+  margin-top: 6px;
+}
+
+label {
+  display: block;
+  margin: 15px 0 8px;
+}
+
+select, button {
+  border: 0;
+  border-radius: 12px;
+  padding: 13px 18px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+select {
+  background: white;
+  color: #24134b;
+}
+
+button {
+  color: white;
+  background: #7954ff;
+  margin: 5px;
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(.96);
+}
 
 #arena {
   position: relative;
   width: 100%;
   max-width: 480px;
-  height: 340px;
-  margin: 18px auto;
+  height: 330px;
+  margin: 20px auto;
   overflow: hidden;
-  border: 2px solid #8d6aff;
+  border: 2px solid #9a7aff;
   border-radius: 20px;
   background: #080b20;
-  box-shadow: 0 0 25px #7652ff35;
+  box-shadow: 0 0 25px #7652ff40;
 }
 
 #target {
   position: absolute;
-  width: 54px;
-  height: 54px;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  margin: 0;
+  display: none;
   border: 4px solid white;
   border-radius: 50%;
   background: #ff4f9a;
   box-shadow: 0 0 20px #ff4f9a;
-  display: none;
   touch-action: manipulation;
 }
 
-button {
-  border: 0;
-  border-radius: 14px;
-  padding: 14px 22px;
-  margin: 5px;
-  color: white;
-  font-size: 16px;
+#message {
+  min-height: 28px;
+  color: #ffe38b;
   font-weight: bold;
-  background: #7954ff;
-  cursor: pointer;
 }
 
-button:active { transform: scale(.96); }
-#message { min-height: 28px; color: #ffe38b; }
-footer { color: #aaa3cc; font-size: 12px; margin-top: 24px; }
+#soundButton {
+  background: #343b58;
+}
+
+footer {
+  margin-top: 25px;
+  font-size: 12px;
+  color: #bbb3d8;
+}
 </style>
 </head>
+
 <body>
 
 <h1>🎯 Attrape le cercle</h1>
 <p class="subtitle">Teste tes réflexes et bats ton record !</p>
 
+<label for="level">Choisis ton niveau :</label>
+<select id="level">
+  <option value="easy">😊 Facile</option>
+  <option value="medium">😎 Moyen</option>
+  <option value="hard">🔥 Difficile</option>
+</select>
+
 <div class="stats">
   <div class="stat">
-    <span>SCORE</span>
+    <span>🏆 SCORE</span>
     <strong id="score">0</strong>
   </div>
   <div class="stat">
-    <span>TEMPS</span>
+    <span>⏱️ TEMPS</span>
     <strong id="time">30</strong>
   </div>
   <div class="stat">
-    <span>RECORD</span>
+    <span>❤️ VIES</span>
+    <strong id="lives">5</strong>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <span>🥇 RECORD</span>
     <strong id="best">0</strong>
   </div>
 </div>
@@ -106,86 +168,213 @@ footer { color: #aaa3cc; font-size: 12px; margin-top: 24px; }
   <button id="target" aria-label="Attraper le cercle"></button>
 </div>
 
-<p id="message">Appuie sur « Commencer » pour jouer !</p>
-<button id="start">▶ Commencer</button>
-<button id="restart">↻ Rejouer</button>
+<p id="message">Appuie sur Commencer pour jouer !</p>
 
-<footer>Un jeu de réflexes • Amuse-toi bien !</footer>
+<button id="start">▶ Commencer</button>
+<button id="restart">🔄 Rejouer</button>
+<button id="soundButton">🔊 Son activé</button>
+
+<footer>
+  Attrape le cercle • Jeu de réflexes
+</footer>
 
 <script>
 const arena = document.getElementById("arena");
 const target = document.getElementById("target");
 const scoreText = document.getElementById("score");
 const timeText = document.getElementById("time");
+const livesText = document.getElementById("lives");
 const bestText = document.getElementById("best");
 const message = document.getElementById("message");
 const startButton = document.getElementById("start");
 const restartButton = document.getElementById("restart");
+const levelSelect = document.getElementById("level");
+const soundButton = document.getElementById("soundButton");
 
 let score = 0;
 let timeLeft = 30;
+let lives = 5;
 let playing = false;
 let timer = null;
+let moveTimer = null;
+let soundOn = true;
+let audioContext = null;
 let best = 0;
 
 try {
   best = Number(localStorage.getItem("cercleRecord")) || 0;
 } catch (e) {}
+
 bestText.textContent = best;
+
+function playSound(frequency, duration) {
+  if (!soundOn) return;
+
+  try {
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) return;
+
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.frequency.value = frequency;
+    oscillator.type = "sine";
+
+    gain.gain.setValueAtTime(0.12, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioContext.currentTime + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + duration);
+  } catch (e) {}
+}
 
 function moveTarget() {
   const maxX = arena.clientWidth - target.offsetWidth;
   const maxY = arena.clientHeight - target.offsetHeight;
-  target.style.left = Math.random() * Math.max(0, maxX) + "px";
-  target.style.top = Math.random() * Math.max(0, maxY) + "px";
+
+  target.style.left =
+    Math.random() * Math.max(0, maxX) + "px";
+
+  target.style.top =
+    Math.random() * Math.max(0, maxY) + "px";
+}
+
+function getMoveDelay() {
+  if (levelSelect.value === "easy") return 1500;
+  if (levelSelect.value === "medium") return 1000;
+  return 650;
+}
+
+function startMoving() {
+  clearInterval(moveTimer);
+
+  moveTimer = setInterval(() => {
+    if (playing) {
+      moveTarget();
+    }
+  }, getMoveDelay());
 }
 
 function endGame() {
   playing = false;
+
   clearInterval(timer);
+  clearInterval(moveTimer);
+
   target.style.display = "none";
   startButton.disabled = false;
-  startButton.textContent = "▶ Recommencer";
-  message.textContent = "⏰ Terminé ! Ton score : " + score;
+
+  message.textContent =
+    "🎮 Partie terminée ! Ton score : " + score;
+
+  playSound(300, 0.3);
 
   if (score > best) {
     best = score;
     bestText.textContent = best;
+
     try {
       localStorage.setItem("cercleRecord", String(best));
     } catch (e) {}
+
     message.textContent += " 🏆 Nouveau record !";
+  }
+
+  if (lives <= 0) {
+    message.textContent += " Tu as perdu toutes tes vies.";
   }
 }
 
 function startGame() {
   clearInterval(timer);
+  clearInterval(moveTimer);
+
   score = 0;
   timeLeft = 30;
+  lives = 5;
   playing = true;
+
   scoreText.textContent = score;
   timeText.textContent = timeLeft;
+  livesText.textContent = lives;
+
   message.textContent = "Vite ! Attrape le cercle rose !";
   startButton.disabled = true;
+
   target.style.display = "block";
   moveTarget();
+  startMoving();
 
   timer = setInterval(() => {
     timeLeft--;
     timeText.textContent = timeLeft;
-    if (timeLeft <= 0) endGame();
+
+    if (timeLeft <= 0) {
+      endGame();
+    }
   }, 1000);
 }
 
 target.addEventListener("click", () => {
   if (!playing) return;
+
   score++;
   scoreText.textContent = score;
+
+  playSound(500 + score * 20, 0.12);
   moveTarget();
+});
+
+arena.addEventListener("click", (event) => {
+  if (!playing || event.target === target) return;
+
+  lives--;
+  livesText.textContent = lives;
+
+  playSound(180, 0.15);
+  message.textContent = "Raté ! Il te reste " + lives + " vies.";
+
+  if (lives <= 0) {
+    endGame();
+  }
 });
 
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", startGame);
+
+levelSelect.addEventListener("change", () => {
+  if (playing) {
+    startMoving();
+  }
+});
+
+soundButton.addEventListener("click", () => {
+  soundOn = !soundOn;
+
+  soundButton.textContent = soundOn
+    ? "🔊 Son activé"
+    : "🔇 Son désactivé";
+
+  if (soundOn) {
+    playSound(600, 0.15);
+  }
+});
 </script>
 
 </body>
